@@ -1,6 +1,5 @@
 import argparse
 from time import sleep
-from pprint import pprint
 from battleship import Battleship
 
 
@@ -25,16 +24,12 @@ def main(args):
     # distribute ships on both pc and user grids
     bs.distribute_ships()
 
-    print("Game started.")
+    print("Game started.\n")
 
     while(1):   # game routine
 
         # print game board status
-        print(bs)
-
-        # For testing purposes
-        #  print(bs.user)
-        #  pprint(bs.user.shots)
+        print(bs, "\n")
 
         # prevent pc from playing after inputs restart/ships/quit->no
         user_turn = True
@@ -82,11 +77,19 @@ def main(args):
         # execute computer move
         res = bs.pc.shoot(pc_move[0], pc_move[1:])
         # print shoot result
-        print(res)
+        print(res, "\n")
         sleep(1)
 
-        # TODO: check, if user or pc or both have won
-        # TODO: print final board and exit loop
+        # check if one party has won
+        if bs.user.game_over:
+            if bs.pc.game_over:
+                print("DRAW! All ships are destroyed! What a game...")
+            else:
+                print("VICTORY! Congratulations, you have destroyed all ships!")
+            break
+        elif bs.pc.game_over:
+            print("DEFEAT! Computer has found all of your ships!")
+            break
 
 
 def test():
@@ -101,6 +104,8 @@ def test():
     bs.pc.board.iloc[2][5:9] = True
     bs.pc.shots[:,7:10] = True
 
+    print(bs.user.board)
+    print(bs.user.shots)
     # print game board status
     print(bs)
 
@@ -120,9 +125,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    test()
+    #  test()
 
-    #  try:
-        #  main(args)
-    #  except KeyboardInterrupt:
-        #  print("\nKeyboardInterrupt: User quit the game. Thanks for playing!")
+    try:
+        main(args)
+    except KeyboardInterrupt:
+        print("\nKeyboardInterrupt: User quit the game. Thanks for playing!")
