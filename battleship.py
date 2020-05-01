@@ -80,42 +80,50 @@ def main(args):
 
     print("Game started.")
 
-    while(1):
-
+    while(1):   # game routine
         print("Computer\n", pc)
         print("\nUser\n",user)
-        shot = input("Please enter field(e.g. E5)/ships/quit/restart: ")
 
-        if len(shot) < 2:
-            print("Invalid input. Please try again.")
-            continue
+        # prevent pc from playing after inputs restart/ships/quit->no
+        user_turn = True
+        while(user_turn):
+            shot = input("Please enter field(e.g. E5)/ships/quit/restart: ").lower()
+            # lower characters to limit possibilities
 
-        # play the game. it's fun!
-        if shot[1] in ['1','2','3','4','5','6','7','8','9','10']:
-            if shot[0] in ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]:
-                user.shoot(shot[0].upper(), shot[1])
-                # TODO: print return of shoot: ocean, hit or destroyal or game_over
-                sleep(1)
+            # play game
+            if (shot[0] in ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]) and (len(shot)>=2):
+                if shot[1:] in ['1','2','3','4','5','6','7','8','9','10']:
+                    user.shoot(shot[0].upper(), shot[1:])
+                    # TODO: print return of shoot: ocean, hit or destroyal or game_over
+                    user_turn = False
+                    sleep(1)
+                else:
+                    print("Row number has to be between 1 and 10.")
 
-        # restart game
-        if shot == "restart":
-            # TODO: let the game restart (with new ship positions ^^)
-            continue
+            # restart game
+            elif shot in ["restart", "r"]:     # restart game
+                # TODO: let the game restart (with new ship positions ^^)
+                print("Restart game dummy text.")
 
-        # print remaining ships
-        if shot == "ships":
-            # TODO: print remaining ships of pc and user
-            # TODO: create method in class grid to print remaining ships
-            pass
 
-        # end game
-        if shot == "quit":
-            while(1):
-                confirmation = input("Do you really want to quit game? (yes/y/Y/no/n/N) ")
-                if confirmation in ["yes", "y", "Y"]:
-                    return
-                elif confirmation in ["no", "n", "N"]:
-                    break
+            # quit game
+            elif shot in ["quit", "q"]:
+                while(1):
+                    confirmation = input("Do you really want to quit game? (yes/y/Y/no/n/N) ")
+                    if confirmation.lower() in ["yes", "y"]:
+                        return
+                    elif confirmation.lower() in ["no", "n"]:
+                        break
+
+            # print remaining ships
+            elif shot in ["ships", "s"]: # print remaining ships
+                # TODO: print remaining ships of pc and user
+                # TODO: create method in class grid to print remaining ships
+                print("Ships command dummy text")
+
+            # no pattern matched
+            else:
+                print("No pattern matched. Please try again.")
 
         # TODO: let pc shoot randomly, except a ship is hit
         print("Computer chooses field dummy text")
@@ -140,4 +148,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    main(args)
+    try:
+        main(args)
+    except KeyboardInterrupt:
+        print("\nKeyboardInterrupt: User quit the game. Thanks for playing!")
