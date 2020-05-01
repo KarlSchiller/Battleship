@@ -89,6 +89,22 @@ def main(args):
         # TODO: print final board and exit loop
 
 
+def test():
+    # Initialize game
+    bs = Battleship()
+
+    bs.user.board.iloc[5:8, 2] = True
+    bs.user.board.iloc[2][5:9] = True
+    bs.user.shots[:,7:10] = True
+
+    bs.pc.board.iloc[5:8, 2] = True
+    bs.pc.board.iloc[2][5:9] = True
+    bs.pc.shots[:,7:10] = True
+
+    # print game board status
+    print(bs)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
             description="The battleship boardgame for the terminal.")
@@ -104,7 +120,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    try:
-        main(args)
-    except KeyboardInterrupt:
-        print("\nKeyboardInterrupt: User quit the game. Thanks for playing!")
+    test()
+
+    #  try:
+        #  main(args)
+    #  except KeyboardInterrupt:
+        #  print("\nKeyboardInterrupt: User quit the game. Thanks for playing!")
