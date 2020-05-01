@@ -1,4 +1,5 @@
 from pandas import DataFrame
+import numpy as np
 
 
 class grid():
@@ -9,17 +10,29 @@ class grid():
         self.board = DataFrame(False,
                 index=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 columns=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
-        self.shots = [[False]*10]*10    # shots taken
-        self.player = player    # pc or user
+        self.shots = np.array([[False]*10]*10)    # shots taken
+        self.player = player    # 'computer' or 'user'
         # TODO: add attribute that holds remaining ships
         # TODO: distribute ships on self.board
 
     def draw(self):
-        # TODO: pc grid: place '?' for all field that have not been shot yet
-        # TODO: user grid: write 0 for all non shot ships and ' '  for all non shot oceans
-        matrix = self.board.replace(to_replace=False, value='~')
-        matrix.replace(to_replace=True, value='x', inplace=True)
-        return matrix
+        '''Create a grid with printable characters'''
+        print_grid = DataFrame(False,
+                index=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                columns=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
+        if self.player == 'computer':
+            print_grid[:] = ' ' # all non-shot water fields
+            # element-wise multiplication of two boolean matrices, ~ inverts a matrix
+            print_grid[np.multiply(~self.board,self.shots)] = '~' # all shot water fields
+            print_grid[self.board] = '0' # all ships
+            print_grid[np.multiply(self.board,self.shots)] = 'x' # all shot ship fields
+        elif self.player == 'user':
+            print_grid[:] = '?' # all non-shot fields
+            print_grid[np.multiply(~self.board,self.shots)] = '~' # all shot water fields
+            print_grid[np.multiply(self.board,self.shots)] = 'x' # all shot ship fields
+        else:
+            raise ValueError("grid player is neither 'user' nor 'computer'")
+        return print_grid
 
     def __str__(self):
         '''Print grid in string format'''
@@ -59,6 +72,10 @@ class Battleship():
     def instructions(self):
         '''Print instructions of the battleship game'''
         # TODO
+        # Basic introduction to game
+        # Printed grids: what character means what?
+        # Possible user inputs
+        # How does the computer move?
         return "To be added."
 
     def create_computer_move(self):
