@@ -1,88 +1,116 @@
 import argparse
-import pandas as pd
-import numpy as np
+from pandas import DataFrame
 from time import sleep
 from pprint import pprint
 
 
 class grid():
     '''Holds one battleship grid'''
-    def __init__(self):
+    # TODO: explain attributes
+    def __init__(self, player):
         self.game_over = False  # set to True if all ships are hit
-        self.board = pd.DataFrame(False,
-                index=np.arange(start=1, stop=11),
+        self.board = DataFrame(False,
+                index=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 columns=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
-        self.shots = [[False]*10]*10
+        self.shots = [[False]*10]*10    # shots taken
+        self.player = player    # pc or user
         # TODO: add attribute that holds remaining ships
         # TODO: distribute ships on self.board
-        # TODO: add attribute to check if player is pc or user
+
+    def draw(self):
+        # TODO: pc grid: place '?' for all field that have not been shot yet
+        # TODO: user grid: write 0 for all non shot ships and ' '  for all non shot oceans
+        matrix = self.board.replace(to_replace=False, value='~')
+        matrix.replace(to_replace=True, value='x', inplace=True)
+        return matrix
 
     def __str__(self):
-        '''Print grid to console'''
-        # TODO: place '?' for all field that have not been shot yet if grid is from pc
-        # TODO: user grid: write 0 for all non shot ships and ' '  for all non shot oceans
-        pretty = self.board.replace(to_replace=False, value='~')
-        pretty.replace(to_replace=True, value='x', inplace=True)
-        return pretty.to_string(header=True, index=True)
+        '''Print grid in string format'''
+        return self.draw().to_string(header=True, index=True)
 
     def shoot(self, row, col):
         '''Shoot at a field (row, col) and return ocean or hit'''
-        print('row {}\ncol {}'.format(row,col))
+        # TODO: check, if field is already shot
         # TODO: Update shots
         # TODO: check, if a ship is hit
         # TODO: check if ship is destroyed
         # TODO: update ships attribute in case of destruction
         # TODO: check if game is over
         # TODO: return ocean, hit ,destroyal or game_over
+        return "shoot result dummy text"
 
 
-def print_instructions():
-    '''Print instructions of the battleship game'''
-    print("To be added.")
-    # TODO
+class Battleship():
+    ''' The battleship game board '''
+    # TODO: Explain attributes
 
+    def __init__(self):
+        # TODO: Initialise ship attribute of user and pc with param ships
+        self.pc = grid('computer')
+        self.user = grid('user')
+        # number of ships. First index are ships of size one, second of size two etc.
+        self.ships = [2,2,1,1,1]
 
-def custom_ships(ships):
-    '''Let the user define custom ship numbers'''
-    ships[3] = 5 # works!
-    # TODO: Ask the number of every ship type
-    # TODO: Update ships list accordingly
-    # TODO: Check, if number does not exceed a certain limit
+    def __str__(self):
+        # TODO: print both grid next to each other
+        return "Computer\n"+str(self.pc)+"\n\nUser\n"+str(self.user)
 
+    def distribute_ships(self):
+        # TODO: Distribute ships
+        pass
 
-def init_game(ships):
-    '''Initialise game'''
-    # TODO: Initialise ship attribute of user and pc with param ships
-    user = grid()
-    pc = grid()
-    # TODO: Distribute ships
-    return (pc, user)
+    def instructions(self):
+        '''Print instructions of the battleship game'''
+        # TODO
+        return "To be added."
+
+    def create_computer_move(self):
+        # TODO: let pc shoot randomly, except a ship is hit
+        # return field string
+        return "dummy field"
+
+    def restart(self):
+        # TODO: let the game restart (with new ship positions ^^)
+        print("Restart game dummy text.")
+        pass
+
+    def remaining_ships(self):
+        # TODO: print remaining ships of pc and user
+        # return string to print
+        return "Print ships dummy return string"
 
 
 def main(args):
 
-    if args.instructions:
-        print_instructions()
-        return
+    # Initialize game
+    bs = Battleship()
 
-    # number of ships. First index are ships of size one, second of size two etc.
-    ships = [2,2,1,1,1] # default values
+    if args.instructions:
+        print(bs.instructions())
+        return
 
     # game with custom ship numbers
     if args.custom:
-        custom_ships(ships)
+        # TODO: Ask the number of every ship type
+        # TODO: Update bs.ships list accordingly
+        # TODO: Check, if number does not exceed a certain limit
+        bs.ships[3] = 5 # dummy
+        print("Custom ship number dummy text")
+        print(bs.ships)
 
-    # pc holds the grid with ships of the user, hence the grid the pc shoots at
-    # user holds the grid with ships of the pc, hence the grid the user shoots at
-    pc, user = init_game(ships)
-    #  print(user)
-    #  pprint(user.shots)
+    # distribute ships on both pc and user grids
+    bs.distribute_ships()
 
     print("Game started.")
 
     while(1):   # game routine
-        print("Computer\n", pc)
-        print("\nUser\n",user)
+
+        # print game board status
+        print(bs)
+
+        # For testing purposes
+        #  print(bs.user)
+        #  pprint(bs.user.shots)
 
         # prevent pc from playing after inputs restart/ships/quit->no
         user_turn = True
@@ -93,18 +121,18 @@ def main(args):
             # play game
             if (shot[0] in ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]) and (len(shot)>=2):
                 if shot[1:] in ['1','2','3','4','5','6','7','8','9','10']:
-                    user.shoot(shot[0].upper(), shot[1:])
-                    # TODO: print return of shoot: ocean, hit or destroyal or game_over
-                    user_turn = False
+                    res = bs.user.shoot(shot[0].upper(), shot[1:])
+                    #  print('row {}\ncol {}'.format(shot[0].upper(), shot[1:]))   # dummy
                     sleep(1)
+                    print(res)
+                    sleep(1)
+                    user_turn = False
                 else:
                     print("Row number has to be between 1 and 10.")
 
             # restart game
-            elif shot in ["restart", "r"]:     # restart game
-                # TODO: let the game restart (with new ship positions ^^)
-                print("Restart game dummy text.")
-
+            elif shot in ["restart", "r"]:
+                bs.restart()
 
             # quit game
             elif shot in ["quit", "q"]:
@@ -117,20 +145,24 @@ def main(args):
 
             # print remaining ships
             elif shot in ["ships", "s"]: # print remaining ships
-                # TODO: print remaining ships of pc and user
-                # TODO: create method in class grid to print remaining ships
-                print("Ships command dummy text")
+                print(bs.remaining_ships())
 
             # no pattern matched
             else:
                 print("No pattern matched. Please try again.")
 
-        # TODO: let pc shoot randomly, except a ship is hit
-        print("Computer chooses field dummy text")
+        # calculate computer move
+        pc_move = bs.create_computer_move()
+        print("Computer chooses field: "+ pc_move)
         sleep(1)
-        # TODO: print shoot result
-        print("Shoot result dummy text.")
+        # execute computer move
+        res = bs.pc.shoot(pc_move[0], pc_move[1:])
+        # print shoot result
+        print(res)
         sleep(1)
+
+        # TODO: check, if user or pc or both have won
+        # TODO: print final board and exit loop
 
 
 if __name__ == '__main__':
