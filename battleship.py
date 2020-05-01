@@ -62,8 +62,16 @@ class Battleship():
         self.ships = [2,2,1,1,1]
 
     def __str__(self):
-        # TODO: print both grid next to each other
-        return "Computer\n"+str(self.pc)+"\n\nUser\n"+str(self.user)
+        pc = self.pc.draw()
+        user = self.user.draw()
+        indent = " "*2  # indent at the left side
+        space = " "*8   # space between pc and user grid
+        out = indent+"Computer"+" "*24+space+"User\n"
+        out += indent+" "*4+"  ".join(pc.columns)+space+" "*4+"  ".join(user.columns)
+        for row in range(len(pc)):
+            out += "\n"+indent+"{:2d}  ".format(row+1)+"  ".join(pc.iloc[row,:])
+            out += space+"{:2d}  ".format(row+1)+"  ".join(user.iloc[row,:])
+        return out
 
     def distribute_ships(self):
         # TODO: Distribute ships
