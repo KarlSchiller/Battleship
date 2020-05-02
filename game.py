@@ -1,6 +1,7 @@
 import argparse
 from time import sleep
 from battleship import Battleship
+from numpy import zeros
 
 
 def main(args):
@@ -14,12 +15,28 @@ def main(args):
 
     # game with custom ship numbers
     if args.custom:
-        # TODO: Ask the number of every ship type
-        # TODO: Update bs.ships list accordingly
-        # TODO: Check, if number does not exceed a certain limit
-        bs.ships[3] = 5 # dummy
-        print("Custom ship number dummy text")
-        print(bs.ships)
+        ships = zeros(5)
+        ship_names = ['carriers', 'battleships', 'destroyers', 'submarines', 'patrol boats']
+        input_needed = True
+        while input_needed:
+            for i in range(5):
+                shipnum = input("Please enter number of {:12s} (size={}): ".format(ship_names[i], 5-i))
+                try:
+                    int(shipnum)
+                    ships[i] = shipnum
+                except ValueError:
+                    print("Input is not a Number. Number of {} is set to zero.".format(ship_names[i]))
+            # Number of ship field should not exceed a certain limit
+            # multiply ship quantity with their respective size, sum all elements up
+            shipnum = ([5,4,3,2,1]*ships).sum()
+            if shipnum <= 30:
+                input_needed = False
+            else:
+                print("The number of ship fields ({d}) is too high (max 30). \
+                        Please consider less or smaller ships.".format(shipnum))
+        bs.set_ship_nmbrs(ships)
+    else:
+        bs.set_ship_nmbrs([1,1,2,2,2])
 
     # distribute ships on both pc and user grids
     bs.distribute_ships()
@@ -41,7 +58,6 @@ def main(args):
             if (shot[0] in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]) and (len(shot)>=2):
                 if shot[1:] in ['1','2','3','4','5','6','7','8','9','10']:
                     res = bs.user.shoot(shot)
-                    #  print('row {}\ncol {}'.format(shot[0].upper(), shot[1:]))   # dummy
                     sleep(1)
                     print(res)
                     sleep(1)
@@ -78,6 +94,7 @@ def main(args):
         print("Computer chooses field: "+ pc_move)
         sleep(1)
         # execute computer move
+        # TODO
         #  res = bs.pc.shoot(pc_move)
         # print shoot result
         #  print(res, "\n")
