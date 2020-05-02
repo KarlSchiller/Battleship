@@ -34,27 +34,28 @@ def main(args):
         # prevent pc from playing after inputs restart/ships/quit->no
         user_turn = True
         while(user_turn):
-            shot = input("Please enter field(e.g. E5)/ships/quit/restart: ").lower()
-            # lower characters to limit possibilities
+            shot = input("Please enter field(e.g. E5)/ships/quit/restart: ").upper()
+            # upper characters to limit possibilities
 
             # play game
-            if (shot[0] in ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]) and (len(shot)>=2):
+            if (shot[0] in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]) and (len(shot)>=2):
                 if shot[1:] in ['1','2','3','4','5','6','7','8','9','10']:
-                    res = bs.user.shoot(shot[0].upper(), shot[1:])
+                    res = bs.user.shoot(shot)
                     #  print('row {}\ncol {}'.format(shot[0].upper(), shot[1:]))   # dummy
                     sleep(1)
                     print(res)
                     sleep(1)
-                    user_turn = False
+                    if not res == 'Field is already shot':
+                        user_turn = False
                 else:
                     print("Row number has to be between 1 and 10.")
 
             # restart game
-            elif shot in ["restart", "r"]:
+            elif shot in ["RESTART", "R"]:
                 bs.restart()
 
             # quit game
-            elif shot in ["quit", "q"]:
+            elif shot in ["QUIT", "Q"]:
                 while(1):
                     confirmation = input("Do you really want to quit game? (yes/y/Y/no/n/N) ")
                     if confirmation.lower() in ["yes", "y"]:
@@ -63,7 +64,7 @@ def main(args):
                         break
 
             # print remaining ships
-            elif shot in ["ships", "s"]: # print remaining ships
+            elif shot in ["SHIPS", "S"]: # print remaining ships
                 print(bs.remaining_ships())
 
             # no pattern matched
@@ -75,9 +76,9 @@ def main(args):
         print("Computer chooses field: "+ pc_move)
         sleep(1)
         # execute computer move
-        res = bs.pc.shoot(pc_move[0], pc_move[1:])
+        #  res = bs.pc.shoot(pc_move)
         # print shoot result
-        print(res, "\n")
+        #  print(res, "\n")
         sleep(1)
 
         # check if one party has won

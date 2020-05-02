@@ -2,8 +2,8 @@ from pandas import DataFrame
 import numpy as np
 
 
-class grid():
-    '''Holds one battleship grid'''
+class Grid():
+    '''Holds one battleship Grid'''
     # TODO: explain attributes
     def __init__(self, player):
         self.game_over = False  # set to True if all ships are hit
@@ -38,16 +38,24 @@ class grid():
         '''Print grid in string format'''
         return self.draw().to_string(header=True, index=True)
 
-    def shoot(self, row, col):
+    def shoot(self, shoot_str):
         '''Shoot at a field (row, col) and return ocean or hit'''
-        # TODO: check, if field is already shot
-        # TODO: Update shots
-        # TODO: check, if a ship is hit
-        # TODO: check if ship is destroyed
+        # row in 'A', 'B', ... Replace with 0, 1, ... by getting ASCII number
+        col = ord(shoot_str[0].upper())-65  # 0 ... 9
+        row = int(shoot_str[1:])-1          # 0 ... 9
+        print(row, ' '*9, col)
+        if self.shots[row, col] == True:
+            return 'Field is already shot'
+        self.shots[row, col] = True    # Save shot
+
+        # check, if a ship is hit
+        if self.board[shoot_str[0].upper()][col+1] == True:
+            # TODO: check if ship is destroyed
+            return 'Hit'
         # TODO: update ships attribute in case of destruction
         # TODO: check if game is over
         # TODO: return ocean, hit ,destroyal or game_over
-        return "shoot result dummy text"
+        return "Ocean"
 
 
 class Battleship():
@@ -56,8 +64,8 @@ class Battleship():
 
     def __init__(self):
         # TODO: Initialise ship attribute of user and pc with param ships
-        self.pc = grid('computer')
-        self.user = grid('user')
+        self.pc = Grid('computer')
+        self.user = Grid('user')
         # number of ships. First index are ships of size one, second of size two etc.
         self.ships = [2,2,1,1,1]
 
@@ -65,7 +73,7 @@ class Battleship():
         pc = self.pc.draw()
         user = self.user.draw()
         indent = " "*2  # indent at the left side
-        space = " "*8   # space between pc and user grid
+        space = " "*8   # space between pc and user Grid
         out = indent+"Computer"+" "*24+space+"User\n"
         out += indent+" "*4+"  ".join(pc.columns)+space+" "*4+"  ".join(user.columns)
         for row in range(len(pc)):
@@ -81,7 +89,7 @@ class Battleship():
         '''Print instructions of the battleship game'''
         # TODO
         # Basic introduction to game
-        # Printed grids: what character means what?
+        # Printed Grids: what character means what?
         # Possible user inputs
         # How does the computer move?
         return "To be added."
