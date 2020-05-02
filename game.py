@@ -53,6 +53,8 @@ def main(args):
             # restart game
             elif shot in ["RESTART", "R"]:
                 bs.restart()
+                print("\nGame restarted.\n")
+                print(bs, "\n")
 
             # quit game
             elif shot in ["QUIT", "Q"]:

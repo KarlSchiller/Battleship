@@ -5,15 +5,14 @@ import numpy as np
 class Grid():
     '''Holds one battleship Grid'''
     # TODO: explain attributes
-    def __init__(self, player):
+    def __init__(self, player, ship_nmbrs):
         self.game_over = False  # set to True if all ships are hit
         self.board = DataFrame(False,
                 index=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 columns=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
         self.shots = np.array([[False]*10]*10)    # shots taken
         self.player = player    # 'computer' or 'user'
-        # TODO: add attribute that holds remaining ships
-        # TODO: distribute ships on self.board
+        self.ships = ship_nmbrs
 
     def draw(self):
         '''Create a grid with printable characters'''
@@ -51,11 +50,17 @@ class Grid():
         # check, if a ship is hit
         if self.board[shoot_str[0].upper()][col+1] == True:
             # TODO: check if ship is destroyed
+            # TODO: update ships attribute in case of destruction
             return 'Hit'
-        # TODO: update ships attribute in case of destruction
+
         # TODO: check if game is over
         # TODO: return ocean, hit ,destroyal or game_over
         return "Ocean"
+
+    def distribute_ships(self):
+        '''Distribute ships on grid'''
+        # TODO
+        pass
 
 
 class Battleship():
@@ -63,11 +68,10 @@ class Battleship():
     # TODO: Explain attributes
 
     def __init__(self):
-        # TODO: Initialise ship attribute of user and pc with param ships
-        self.pc = Grid('computer')
-        self.user = Grid('user')
         # number of ships. First index are ships of size one, second of size two etc.
-        self.ships = [2,2,1,1,1]
+        self.ship_nmbrs = [2,2,1,1,1]
+        self.pc = Grid('computer', self.ship_nmbrs)
+        self.user = Grid('user', self.ship_nmbrs)
 
     def __str__(self):
         pc = self.pc.draw()
@@ -82,8 +86,9 @@ class Battleship():
         return out
 
     def distribute_ships(self):
-        # TODO: Distribute ships
-        pass
+        '''Distribute ships on both player and pc grid'''
+        self.user.distribute_ships()
+        self.pc.distribute_ships()
 
     def instructions(self):
         '''Print instructions of the battleship game'''
@@ -100,9 +105,12 @@ class Battleship():
         return "dummy field"
 
     def restart(self):
-        # TODO: let the game restart (with new ship positions ^^)
-        print("Restart game dummy text.")
-        pass
+        '''Restart game. Only saved param is ship_nmbrs'''
+        # do not update self.ship_nmbrs as it could be customized
+        self.pc = Grid('computer', self.ship_nmbrs)
+        self.user = Grid('user', self.ship_nmbrs)
+        # new ship positions
+        self.distribute_ships()
 
     def remaining_ships(self):
         # TODO: print remaining ships of pc and user
