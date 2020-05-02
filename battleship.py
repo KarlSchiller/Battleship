@@ -7,12 +7,16 @@ class Grid():
     # TODO: explain attributes
     def __init__(self, player, ship_nmbrs):
         self.game_over = False  # set to True if all ships are hit
-        self.board = DataFrame(False,
+        self.board = DataFrame(False,   # distribution of ships
                 index=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 columns=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
         self.shots = np.array([[False]*10]*10)    # shots taken
         self.player = player    # 'computer' or 'user'
-        self.ships = ship_nmbrs
+        self.ships = ship_nmbrs # array with ship distribution
+
+    def __str__(self):
+        '''Print grid in string format'''
+        return self.draw().to_string(header=True, index=True)
 
     def draw(self):
         '''Create a grid with printable characters'''
@@ -32,10 +36,6 @@ class Grid():
         else:
             raise ValueError("grid player is neither 'user' nor 'computer'")
         return print_grid
-
-    def __str__(self):
-        '''Print grid in string format'''
-        return self.draw().to_string(header=True, index=True)
 
     def shoot(self, shoot_str):
         '''Shoot at a field (row, col) and return ocean or hit'''
@@ -119,6 +119,17 @@ class Battleship():
         self.distribute_ships()
 
     def remaining_ships(self):
-        # TODO: print remaining ships of pc and user
-        # return string to print
-        return "Print ships dummy return string"
+        '''Create a string with information about non-destroyed ships'''
+        indent = " "*2
+        maxnum = self.ship_nmbrs.max()  # maximum number of ships
+        out = indent+"Not destroyed ships (hit ships are included)\n"
+        out += indent+"Computer"+' '*4+' '*6    # 6 spaces between pc and user
+        if maxnum > 2:
+            out += ' '*int((maxnum-2)*6)
+        out += "User"
+        for i in range(5):
+            # save 5 spaces for every ship {:5s} and write 0's for every ship length
+            out += '\n'+indent+('{:5s} '.format('0'*(5-i)))*int(self.pc.ship_nmbrs[i]) # pc
+            # TODO: extra space if number of ships is below maxnum
+            out += ' '*6+indent+('{:5s} '.format('0'*(5-i)))*int(self.user.ship_nmbrs[i]) # user
+        return out
