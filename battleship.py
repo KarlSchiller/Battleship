@@ -69,7 +69,7 @@ class Battleship():
 
     def __init__(self):
         # number of ships. First index are ships of size one, second of size two etc.
-        self.ship_nmbrs = [2,2,1,1,1]
+        self.ship_nmbrs = []
         self.pc = Grid('computer', self.ship_nmbrs)
         self.user = Grid('user', self.ship_nmbrs)
 
@@ -84,6 +84,12 @@ class Battleship():
             out += "\n"+indent+"{:2d}  ".format(row+1)+"  ".join(pc.iloc[row,:])
             out += space+"{:2d}  ".format(row+1)+"  ".join(user.iloc[row,:])
         return out
+
+    def set_ship_nmbrs(self, ship_nmbrs):
+        '''Set custom ship numbers'''
+        self.ship_nmbrs = ship_nmbrs
+        self.pc.ship_nmbrs = ship_nmbrs
+        self.user.ship_nmbrs = ship_nmbrs
 
     def distribute_ships(self):
         '''Distribute ships on both player and pc grid'''
