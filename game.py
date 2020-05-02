@@ -1,7 +1,7 @@
 import argparse
 from time import sleep
 from battleship import Battleship
-from numpy import zeros
+from numpy import zeros, array
 
 
 def main(args):
@@ -36,7 +36,7 @@ def main(args):
                         Please consider less or smaller ships.".format(shipnum))
         bs.set_ship_nmbrs(ships)
     else:
-        bs.set_ship_nmbrs([1,1,2,2,2])
+        bs.set_ship_nmbrs(array([1,1,2,2,2]))
 
     # distribute ships on both pc and user grids
     bs.distribute_ships()
