@@ -22,8 +22,7 @@ def main(args):
             for i in range(5):
                 shipnum = input("Please enter number of {:12s} (size={}): ".format(ship_names[i], 5-i))
                 try:
-                    int(shipnum)
-                    ships[i] = shipnum
+                    ships[i] = int(shipnum)
                 except ValueError:
                     print("Input is not a Number. Number of {} is set to zero.".format(ship_names[i]))
             # Number of ship field should not exceed a certain limit
@@ -32,9 +31,8 @@ def main(args):
             if shipnum <= 30:
                 input_needed = False
             else:
-                print("The number of ship fields ({d}) is too high (max 30). \
-                        Please consider less or smaller ships.".format(shipnum))
-        bs.set_ship_nmbrs(ships)
+                print("The number of ship fields ({:.0f}) is too high (max 30). Please consider less or smaller ships.".format(shipnum))
+        bs.set_ship_nmbrs(ships.astype(int))
     else:
         bs.set_ship_nmbrs(array([1,1,2,2,2]))
 
