@@ -83,7 +83,7 @@ def main(args):
 
             # print remaining ships
             elif shot in ["SHIPS", "S"]: # print remaining ships
-                print(bs.remaining_ships())
+                print("\n"+bs.remaining_ships()+"\n")
 
             # no pattern matched
             else:

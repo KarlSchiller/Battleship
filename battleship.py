@@ -128,8 +128,11 @@ class Battleship():
             out += ' '*int((maxnum-2)*6)
         out += "User"
         for i in range(5):
+            if self.pc.ship_nmbrs[i] == 0:  # no line needed for not existing ships
+                continue
             # save 5 spaces for every ship {:5s} and write 0's for every ship length
             out += '\n'+indent+('{:5s} '.format('0'*(5-i)))*int(self.pc.ship_nmbrs[i]) # pc
-            # TODO: extra space if number of ships is below maxnum
-            out += ' '*6+indent+('{:5s} '.format('0'*(5-i)))*int(self.user.ship_nmbrs[i]) # user
+            if self.pc.ship_nmbrs[i] < maxnum: # fill space to user ships
+                out += (' '*6)*int(maxnum-self.pc.ship_nmbrs[i])
+            out += ' '*6+('{:5s} '.format('0'*(5-i)))*int(self.user.ship_nmbrs[i]) # user
         return out
