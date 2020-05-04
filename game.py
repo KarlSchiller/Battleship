@@ -15,24 +15,24 @@ def main(args):
 
     # game with custom ship numbers
     if args.custom:
-        ships = zeros(5)
+        ship_nmbrs = zeros(5)
         ship_names = ['carriers', 'battleships', 'destroyers', 'submarines', 'patrol boats']
         input_needed = True
         while input_needed:
             for i in range(5):
                 shipnum = input("Please enter number of {:12s} (size={}): ".format(ship_names[i], 5-i))
                 try:
-                    ships[i] = int(shipnum)
+                    ship_nmbrs[i] = int(shipnum)
                 except ValueError:
                     print("Input is not a Number. Number of {} is set to zero.".format(ship_names[i]))
             # Number of ship field should not exceed a certain limit
             # multiply ship quantity with their respective size, sum all elements up
-            shipnum = ([5,4,3,2,1]*ships).sum()
+            shipnum = ([5,4,3,2,1]*ship_nmbrs).sum()
             if shipnum <= 30:
                 input_needed = False
             else:
                 print("The number of ship fields ({:.0f}) is too high (max 30). Please consider less or smaller ships.".format(shipnum))
-        bs.set_ship_nmbrs(ships.astype(int))
+        bs.set_ship_nmbrs(ship_nmbrs.astype(int))
     else:
         bs.set_ship_nmbrs(array([1,1,2,2,2]))
 
