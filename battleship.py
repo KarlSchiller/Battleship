@@ -13,7 +13,9 @@ class Grid():
         self.board = DataFrame(False,   # distribution of ships
                 index=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 columns=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
-        self.shots = np.array([[False]*10]*10)    # shots taken
+        self.shots = DataFrame(False,   # shots taken
+                index=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                columns=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
         self.player = player    # 'computer' or 'user'
         self.ships = ship_nmbrs # array with ship distribution
 
@@ -43,15 +45,14 @@ class Grid():
     def shoot(self, shoot_str):
         '''Shoot at a field (row, col) and return ocean or hit'''
         # row in 'A', 'B', ... Replace with 0, 1, ... by getting ASCII number
-        col = ord(shoot_str[0].upper())-65  # 0 ... 9
-        row = int(shoot_str[1:])-1          # 0 ... 9
-        print(row, ' '*9, col)
-        if self.shots[row, col] == True:
+        col = shoot_str[0]
+        row = int(shoot_str[1:])
+        if self.shots[col][row] == True:
             return 'Field is already shot'
-        self.shots[row, col] = True    # Save shot
+        self.shots[col][row] = True    # Save shot
 
         # check, if a ship is hit
-        if self.board[shoot_str[0].upper()][col+1] == True:
+        if self.board[col][row] == True:
             # TODO: check if ship is destroyed
             # TODO: update ships attribute in case of destruction
             return 'Hit'
@@ -67,7 +68,7 @@ class Grid():
         direction = ['left', 'right', 'up', 'down']
         # TODO: Smarter way than placing ships at random positions
         counter = 0
-        for ship_type, shipnum in enumerate(self.ship_nmbrs): # for every ship size, start with largest ship
+        for ship_type, shipnum in enumerate(self.ships): # for every ship size, start with largest ship
             for ship in range(shipnum):   # for every ship of type ship_type
                 ship_placed = False
                 while not ship_placed:
@@ -75,7 +76,7 @@ class Grid():
                     rndm_field = sample(axis, 2)    # random row and col number
                     rndm_direction = sample(direction, 1)[0]    # random direction
                     ship_placed = self._place_ship(rndm_field, rndm_direction, 5-ship_type)
-        print("Needed {} iterations (out of {} at minimum)".format(counter, self.ship_nmbrs.sum()))
+        #  print("Needed {} iterations (out of {} at minimum)".format(counter, self.ships.sum()))
 
     def _place_ship(self, field, direction, ship_len):
         ''' Help function for distribute_ships method
@@ -146,8 +147,8 @@ class Battleship():
     def set_ship_nmbrs(self, ship_nmbrs):
         '''Set custom ship numbers'''
         self.ship_nmbrs = ship_nmbrs
-        self.pc.ship_nmbrs = ship_nmbrs
-        self.user.ship_nmbrs = ship_nmbrs
+        self.pc.ships = ship_nmbrs
+        self.user.ships = ship_nmbrs
 
     def distribute_ships(self):
         '''Distribute ships on both player and pc grid'''
@@ -188,11 +189,11 @@ class Battleship():
             out += ' '*int((maxnum-2)*6)
         out += "User"
         for i in range(5):
-            if self.pc.ship_nmbrs[i] == 0:  # no line needed for not existing ships
+            if self.pc.ships[i] == 0:  # no line needed for not existing ships
                 continue
             # save 5 spaces for every ship {:5s} and write 0's for every ship length
-            out += '\n'+indent+('{:5s} '.format('0'*(5-i)))*int(self.pc.ship_nmbrs[i]) # pc
-            if self.pc.ship_nmbrs[i] < maxnum: # fill space to user ships
-                out += (' '*6)*int(maxnum-self.pc.ship_nmbrs[i])
-            out += ' '*6+('{:5s} '.format('0'*(5-i)))*int(self.user.ship_nmbrs[i]) # user
+            out += '\n'+indent+('{:5s} '.format('0'*(5-i)))*int(self.pc.ships[i]) # pc
+            if self.pc.ships[i] < maxnum: # fill space to user ships
+                out += (' '*6)*int(maxnum-self.pc.ships[i])
+            out += ' '*6+('{:5s} '.format('0'*(5-i)))*int(self.user.ships[i]) # user
         return out

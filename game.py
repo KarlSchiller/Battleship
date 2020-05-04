@@ -116,16 +116,19 @@ def test():
 
     bs.user.board.iloc[5:8, 2] = True
     bs.user.board.iloc[2][5:9] = True
-    bs.user.shots[:,7:10] = True
+    bs.user.shots.iloc[:,7:10] = True
 
     bs.pc.board.iloc[5:8, 2] = True
     bs.pc.board.iloc[2][5:9] = True
-    bs.pc.shots[:,7:10] = True
+    bs.pc.shots.iloc[:,7:10] = True
 
     print(bs.user.board)
     print(bs.user.shots)
     # print game board status
     print(bs)
+
+    #  col = ord('A'.upper())-65  # 0 ... 9
+    #  row = int(shoot_str[1:])-1          # 0 ... 9
 
 
 if __name__ == '__main__':
