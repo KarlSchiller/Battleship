@@ -4,12 +4,12 @@ import numpy as np
 from random import sample
 
 
-
-
-
 class _Grid():
-    '''Holds one battleship Grid'''
-    # TODO: explain attributes
+    '''Holds one battleship Grid
+    The Grid consists of a board with the distributed ships, a map of taken guesses/shots,
+    and a list of remaining ships of every size'''
+
+
     def __init__(self, player, ship_nmbrs):
         self.game_over = False  # set to True if all ships are hit
         self.board = DataFrame(0,   # distribution of ships
@@ -21,9 +21,11 @@ class _Grid():
         self.player = player    # 'computer' or 'user'
         self.ship_nmbrs = ship_nmbrs # array with ship distribution
 
+
     def __str__(self):
         '''Print grid in string format'''
         return self.draw().to_string(header=True, index=True)
+
 
     def draw(self):
         '''Create a grid with printable characters'''
@@ -45,8 +47,10 @@ class _Grid():
             raise ValueError("grid player is neither 'user' nor 'computer'")
         return print_grid
 
+
     def shoot(self, shoot_str):
-        '''Shoot at a field (row, col) and return ocean or hit'''
+        '''Shoot at a field (row, col) and return ocean, hit or destroyal
+        Updates game_over attribute if all ships are destroyed'''
         # row in 'A', 'B', ... Replace with 0, 1, ... by getting ASCII number
         col = shoot_str[0]
         row = int(shoot_str[1:])
@@ -69,6 +73,7 @@ class _Grid():
             return 'Hit'
         return "Ocean"
 
+
     def _get_ship_size(self, col, row):
         '''Gives ship sizes of a ship at (col, row)'''
         # self.board[col][row] gets number of ship on the board
@@ -76,6 +81,7 @@ class _Grid():
         # Secondly, get a flattened numpy array of True's and False's
         # Lastly, sum up the array. True is counted as 1, False as 0
         return np.sum((self.board==self.board[col][row]).values.flatten())
+
 
     def _is_destroyed(self, col, row):
         '''Checks if ship is destroyed
@@ -85,6 +91,7 @@ class _Grid():
         # Secondly, get shot values of these fields
         # Lastly, check with np.all if they are all shot (True)
         return np.all(self.shots[self.board == self.board[col][row]])
+
 
     def distribute_ships(self):
         '''Distribute ships on grid'''
@@ -102,6 +109,7 @@ class _Grid():
                     ship_placed = self._place_ship(rndm_field, rndm_direction, 5-ship_type, counter)
                 counter += 1 # next ship
         #  print("Needed {} iterations (out of {} at minimum)".format(cntr_temp, self.ship_nmbrs.sum()))
+
 
     def _place_ship(self, field, direction, ship_len, counter):
         ''' Help function for distribute_ships method
@@ -148,8 +156,10 @@ class _Grid():
 
 
 class Battleship():
-    ''' The battleship game board '''
-    # TODO: Explain attributes
+    ''' The battleship game board
+    A member of this class holds two play grids, one computer and one user grid.
+    It provides basic game functionalities like restart the game or distribute the ships'''
+
 
     def __init__(self):
         # number of ships. First index are ships of size one, second of size two etc.
@@ -157,7 +167,9 @@ class Battleship():
         self.pc = _Grid('computer', self.ship_nmbrs)
         self.user = _Grid('user', self.ship_nmbrs)
 
+
     def __str__(self):
+        '''String representation of the class. Prints the two grids next to each other'''
         pc = self.pc.draw()
         user = self.user.draw()
         indent = " "*2  # indent at the left side
@@ -169,32 +181,19 @@ class Battleship():
             out += space+"{:2d}  ".format(row+1)+"  ".join(user.iloc[row,:])
         return out
 
+
     def set_ship_nmbrs(self, ship_nmbrs):
         '''Set custom ship numbers'''
         self.ship_nmbrs = ship_nmbrs
         self.pc.ship_nmbrs = ship_nmbrs
         self.user.ship_nmbrs = ship_nmbrs
 
+
     def distribute_ships(self):
         '''Distribute ships on both player and pc grid'''
         self.user.distribute_ships()
         self.pc.distribute_ships()
 
-    def instructions(self):
-        '''Print instructions of the battleship game'''
-        # TODO
-        # Basic introduction to game
-        # Printed Grids: what character means what?
-        # Possible user inputs
-        # How does the computer move?
-        return "To be added."
-
-    def create_computer_move(self):
-        # TODO: let pc shoot randomly, except a ship is hit
-        # TODO: Complete ship destruction in case of hit
-        # TODO: Add more sophisticated guesses
-        # return field string
-        return "dummy field"
 
     def restart(self):
         '''Restart game. Only saved param is ship_nmbrs'''
@@ -203,6 +202,7 @@ class Battleship():
         self.user = _Grid('user', self.ship_nmbrs)
         # new ship positions
         self.distribute_ships()
+
 
     def remaining_ships(self):
         '''Create a string with information about non-destroyed ships'''
@@ -222,3 +222,21 @@ class Battleship():
                 out += (' '*6)*int(maxnum-self.pc.ship_nmbrs[i])
             out += ' '*6+('{:5s} '.format('0'*(5-i)))*int(self.user.ship_nmbrs[i]) # user
         return out
+
+
+    def instructions(self):
+        '''Print instructions of the battleship game'''
+        # TODO
+        # Basic introduction to game
+        # Printed Grids: what character means what?
+        # Possible user inputs
+        # How does the computer move?
+        return "To be added."
+
+
+    def create_computer_move(self):
+        # TODO: let pc shoot randomly, except a ship is hit
+        # TODO: Complete ship destruction in case of hit
+        # TODO: Add more sophisticated guesses
+        # return field string
+        return "dummy field"
