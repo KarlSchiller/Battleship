@@ -14,7 +14,7 @@ class _Grid():
     # Maybe uses instances of a class Ship instead of board with booleans?
     def __init__(self, player, ship_nmbrs):
         self.game_over = False  # set to True if all ships are hit
-        self.board = DataFrame(False,   # distribution of ships
+        self.board = DataFrame(0,   # distribution of ships
                 index=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 columns=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
         self.shots = DataFrame(False,   # shots taken
@@ -29,19 +29,20 @@ class _Grid():
 
     def draw(self):
         '''Create a grid with printable characters'''
-        print_grid = DataFrame(False,
+        print_grid = DataFrame('dummy',
                 index=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 columns=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
         if self.player == 'computer':
             print_grid[:] = ' ' # all non-shot water fields
             # element-wise multiplication of two boolean matrices, ~ inverts a matrix
-            print_grid[np.multiply(~self.board,self.shots)] = '~' # all shot water fields
-            print_grid[self.board] = '0' # all ships
-            print_grid[np.multiply(self.board,self.shots)] = 'x' # all shot ship fields
+            print_grid[np.multiply(self.board==0,self.shots)] = '~' # all shot water fields
+            print_grid[self.board!=0] = '0' # all ships
+            print_grid[np.multiply(self.board!=0,self.shots)] = 'x' # all shot ship fields
         elif self.player == 'user':
+            pass
             print_grid[:] = '?' # all non-shot fields
-            print_grid[np.multiply(~self.board,self.shots)] = '~' # all shot water fields
-            print_grid[np.multiply(self.board,self.shots)] = 'x' # all shot ship fields
+            print_grid[np.multiply(self.board==0,self.shots)] = '~' # all shot water fields
+            print_grid[np.multiply(self.board!=0,self.shots)] = 'x' # all shot ship fields
         else:
             raise ValueError("grid player is neither 'user' nor 'computer'")
         return print_grid
@@ -56,6 +57,7 @@ class _Grid():
         self.shots[col][row] = True    # Save shot
 
         # check, if a ship is hit
+        # TODO: Adapt board to numbers
         if self.board[col][row] == True:
             # TODO: check if ship is destroyed
             # TODO: update ships attribute in case of destruction
@@ -88,6 +90,7 @@ class _Grid():
         Checks if a ship of length @ship_len can be placed in direction @direction,
         starting from field @field.
         Places the ship and returns True, if that is possible'''
+        # TODO: Adapt board to numbers
         max_len = len(self.board.index) # outer range of board
         if direction == 'left':
             if (field[1]+1-ship_len < 0):
