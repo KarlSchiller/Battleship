@@ -54,15 +54,37 @@ class _Grid():
             return 'Field is already shot'
         self.shots[col][row] = True    # Save shot
 
-        # check, if a ship is hit
-        if self.board[col][row] != 0:
-            # TODO: check if ship is destroyed
-            # TODO: update ships attribute in case of destruction
+        if self.board[col][row] != 0:   # check, if a ship is hit
+            if self._is_destroyed(col, row): # check, if it is destroyed
+                ship_size = self._get_ship_size(col, row)
+                # update ship_nmbrs attribute
+                # convert index 0...4 to ship size 1...5 by index=|ship_size - 5|
+                if self.ship_nmbrs[abs(ship_size-5)] <= 0:
+                    raise ValueError("ship number array counts no ships of this size.")
+                else:
+                    self.ship_nmbrs[abs(ship_size-5)] -= 1
+                if self.ship_nmbrs.sum() == 0: # are there ships left?
+                    self.game_over = True
+                return 'Destroyal'
             return 'Hit'
-
-        # TODO: check if game is over
-        # TODO: return ocean, hit ,destroyal or game_over
         return "Ocean"
+
+    def _get_ship_size(self, col, row):
+        '''Gives ship sizes of a ship at (col, row)'''
+        # self.board[col][row] gets number of ship on the board
+        # Firstly, mask all fields that contain the ship
+        # Secondly, get a flattened numpy array of True's and False's
+        # Lastly, sum up the array. True is counted as 1, False as 0
+        return np.sum((self.board==self.board[col][row]).values.flatten())
+
+    def _is_destroyed(self, col, row):
+        '''Checks if ship is destroyed
+        col, row represent a field on the board, where a part of the ship is located'''
+        # self.board[col][row] gets number of ship on the board
+        # Firstly, mask all fields that contain the ship.
+        # Secondly, get shot values of these fields
+        # Lastly, check with np.all if they are all shot (True)
+        return np.all(self.shots[self.board == self.board[col][row]])
 
     def distribute_ships(self):
         '''Distribute ships on grid'''
