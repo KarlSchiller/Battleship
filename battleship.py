@@ -10,8 +10,6 @@ from random import sample
 class _Grid():
     '''Holds one battleship Grid'''
     # TODO: explain attributes
-    # TODO: Problem of ships next to each other. How to seperate them???
-    # Maybe uses instances of a class Ship instead of board with booleans?
     def __init__(self, player, ship_nmbrs):
         self.game_over = False  # set to True if all ships are hit
         self.board = DataFrame(0,   # distribution of ships
@@ -34,7 +32,7 @@ class _Grid():
                 columns=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
         if self.player == 'computer':
             print_grid[:] = ' ' # all non-shot water fields
-            # element-wise multiplication of two boolean matrices, ~ inverts a matrix
+            # element-wise multiplication of two boolean matrices, board==0 is a boolean mask
             print_grid[np.multiply(self.board==0,self.shots)] = '~' # all shot water fields
             print_grid[self.board!=0] = '0' # all ships
             print_grid[np.multiply(self.board!=0,self.shots)] = 'x' # all shot ship fields
@@ -57,8 +55,7 @@ class _Grid():
         self.shots[col][row] = True    # Save shot
 
         # check, if a ship is hit
-        # TODO: Adapt board to numbers
-        if self.board[col][row] == True:
+        if self.board[col][row] != 0:
             # TODO: check if ship is destroyed
             # TODO: update ships attribute in case of destruction
             return 'Hit'
@@ -73,57 +70,56 @@ class _Grid():
         axis = range(len(self.board.index))
         direction = ['left', 'right', 'up', 'down']
         # TODO: Smarter way than placing ships at random positions
-        counter = 0
+        counter = 1 # shipnumber to distinguish ships
         for ship_type, shipnum in enumerate(self.ship_nmbrs): # for every ship size, start with largest ship
             for ship in range(shipnum):   # for every ship of type ship_type
                 ship_placed = False
                 while not ship_placed:
-                    counter += 1
                     rndm_field = sample(axis, 2)    # random row and col number
                     rndm_direction = sample(direction, 1)[0]    # random direction
-                    ship_placed = self._place_ship(rndm_field, rndm_direction, 5-ship_type)
-        #  print("Needed {} iterations (out of {} at minimum)".format(counter, self.ship_nmbrs.sum()))
+                    ship_placed = self._place_ship(rndm_field, rndm_direction, 5-ship_type, counter)
+                counter += 1 # next ship
+        #  print("Needed {} iterations (out of {} at minimum)".format(cntr_temp, self.ship_nmbrs.sum()))
 
-    def _place_ship(self, field, direction, ship_len):
+    def _place_ship(self, field, direction, ship_len, counter):
         ''' Help function for distribute_ships method
 
         Checks if a ship of length @ship_len can be placed in direction @direction,
         starting from field @field.
         Places the ship and returns True, if that is possible'''
-        # TODO: Adapt board to numbers
         max_len = len(self.board.index) # outer range of board
         if direction == 'left':
             if (field[1]+1-ship_len < 0):
                 return False    # index beyond grid boundary
-            if True in self.board.iloc[field[0], (field[1]+1-ship_len):(field[1]+1)].unique():
+            if np.all(self.board.iloc[field[0], (field[1]+1-ship_len):(field[1]+1)] == 0):
+                self.board.iloc[field[0], (field[1]+1-ship_len):(field[1]+1)] = counter
+                return True     # ship placed
+            else:
                 return False    # another ship is alreay located here
-            # place ship
-            self.board.iloc[field[0], (field[1]+1-ship_len):(field[1]+1)] = True
-            return True
         elif direction == 'right':
             if (field[1]+ship_len > max_len):
                 return False    # index beyond grid boundary
-            if True in self.board.iloc[field[0], field[1]:(field[1]+ship_len)].unique():
+            if np.all(self.board.iloc[field[0], field[1]:(field[1]+ship_len)] == 0):
+                self.board.iloc[field[0], field[1]:(field[1]+ship_len)] = counter
+                return True     # ship placed
+            else:
                 return False    # another ship is alreay located here
-            # place ship
-            self.board.iloc[field[0], field[1]:(field[1]+ship_len)] = True
-            return True
         elif direction == 'up':
             if (field[0]+1-ship_len < 0):
                 return False    # index beyond grid boundary
-            if True in self.board.iloc[(field[0]+1-ship_len):(field[0]+1), field[1]].unique():
+            if np.all(self.board.iloc[(field[0]+1-ship_len):(field[0]+1), field[1]] == 0):
+                self.board.iloc[(field[0]+1-ship_len):(field[0]+1), field[1]] = counter
+                return True     # ship placed
+            else:
                 return False    # another ship is alreay located here
-            # place ship
-            self.board.iloc[(field[0]+1-ship_len):(field[0]+1), field[1]] = True
-            return True
         elif direction == 'down':
             if (field[0]+ship_len > max_len):
                 return False    # index beyond grid boundary
-            if True in self.board.iloc[field[0]:(field[0]+ship_len), field[1]].unique():
+            if np.all(self.board.iloc[field[0]:(field[0]+ship_len), field[1]] == 0):
+                self.board.iloc[field[0]:(field[0]+ship_len), field[1]] = counter
+                return True     # ship placed
+            else:
                 return False    # another ship is alreay located here
-            # place ship
-            self.board.iloc[field[0]:(field[0]+ship_len), field[1]] = True
-            return True
         else:   # something went wrong
             raise ValueError("Ship direction not in 'left', 'right', 'up' or 'down'")
             return False
